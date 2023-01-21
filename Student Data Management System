@@ -1,0 +1,360 @@
+   
+                                          //  Student Manegment System
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <iomanip>
+
+using namespace std;
+
+int total_subjects;           // Globle variable
+
+
+  	 
+int Student_NO(){
+   
+	int total_students;
+	
+    ifstream myfile("Student_No.txt");
+    
+    myfile >> total_students;
+    
+    if(total_students <= 0){
+    	
+		total_students = 1;
+	}
+	else
+	{
+		total_students++;
+	}
+	
+	ofstream details("Student_No.txt",ios::trunc);
+	
+    details<<total_students;
+
+	return total_students;
+}
+	
+               
+class Student;                // Forward Declaration
+class Department;        
+class Subject;
+
+
+class Address{
+	
+	protected:
+		
+		string House_No;
+		string Street;
+		string City;
+		
+		friend void Display(Student,Department,Subject);
+		
+	public:
+		
+		void address_info(){
+				
+			cout<<"Enter your House_No : ";
+			getline(cin>>ws,House_No);
+			
+			cout<<"Enter your street : ";
+			getline(cin>>ws,Street);
+			
+			cout<<"Enter your city : ";
+			getline(cin>>ws,City);
+			
+				
+			}
+			
+};
+
+class Student{
+	
+	protected:
+		
+		string name;
+	
+		int Sap_id;
+		
+		Address address;       //  Composition
+		                      
+		string department;
+		
+		string subject_names[20];
+		
+	    int marks[20];        
+	    
+		
+		friend void Display(Student,Department,Subject);
+		
+	public:
+		
+			
+		void student_info(){                 // Fuction overriding
+			
+			cout<<"Enter your First Name : "; 
+			getline(cin>>ws,name);
+			
+			cout<<"Enter your Sap Id : "; 
+			cin>>Sap_id;
+			
+            address.address_info();
+            
+			}
+};
+
+class Department:public Student{                   // Single Inheritance
+	private:
+		
+		friend void Display(Student,Department,Subject);
+		
+	public:
+		
+		void student_info(){                       // Fuction overriding
+			
+			cout<<"Enter your department : "; 
+			getline(cin>>ws,department);
+		
+		}
+	
+	
+};
+	
+
+class Subject :public Student{                    // Hierarchicl Inheritance
+	private:
+	    
+		friend void Display(Student,Department,Subject);
+	    
+	public:
+		
+		void Subject_info(){
+		
+		    cout<<"Enter number of Subject you studed  : "; cin>>total_subjects;
+		    
+		    for( int i=0 ; i<total_subjects ; i++ ){
+			    cout<<"Enter "<<i+1<<" subject name : ";cin>>subject_names[i];
+			 }
+	}
+	   void Marks_info(){
+	   	
+	   	bool a = true;
+	   	int j = 0;
+	   	
+	   	while(a){
+	   		
+	   		cout<<"Enter your marks in "<<subject_names[j] <<" from (0 to 100) : ";   cin>>marks[j];
+	   		
+   			if(marks[j]>= 0 && marks[j]<= 100){
+   				
+    			j++;
+    			
+			}
+			else 
+			{
+			
+				cout<<"Please Enter valied input from (0 to 100) : "<<endl;
+			}
+			
+			if (j==total_subjects){
+				
+				a = false;
+				
+			} // end of for 
+		
+		}  //  end of while
+		
+		}  //end of function
+	
+};
+
+
+void Display(Student st,Department de,Subject su){           // Friend Fuction
+	
+	ofstream write_in_file;
+	 
+	write_in_file.open("students_data.txt",ios::app);
+	 
+	write_in_file<<endl<<"=================================================================="<<endl<<endl; 
+	 	
+	write_in_file<<"Student Name :"<<st.name<<endl;
+	 
+	write_in_file<<"Sap Id :"<<st.Sap_id<<endl;
+	 
+	write_in_file<<"Department :"<<de.department<<endl;
+	 
+	 
+	for(int k=0 ; k<total_subjects ; k++){
+	 	
+	write_in_file<<k+1<<"-"<<su.subject_names[k]<<" marks are : "<<su.marks[k]<<endl;
+	}
+	 
+	write_in_file<<"Addres :"<<st.address.House_No<<" "<<st.address.Street<<" "<<st.address.City<<endl<<endl<<endl;
+	
+	write_in_file<<endl<<"=================================================================="<<endl<<endl;
+	 
+	write_in_file.close();
+	 
+    string line;
+    
+	ifstream read_from_file;
+	
+    read_from_file.open("students_data.txt");
+    
+    while (getline(read_from_file, line)) {
+    	
+       cout << line << endl;
+    }
+ 
+    read_from_file.close();
+       
+    
+}
+
+
+
+void main_display(){
+	
+	bool b=true;
+	
+	while(b)
+	{
+	cout<<"\nPress 1 to enter data"<<endl;
+
+	cout<<"Press 2 to show data"<<endl;
+
+	cout<<"Press 3 to exit"<<endl;
+	
+	int pointer1;
+	
+    int *num=&pointer1;
+    
+	cout<<"Enter number : ";  cin>>*num;
+	
+	
+    
+	system("cls");	
+	if(*num==1)   {
+	 	
+	 	cout<<endl<<" Student number "<<Student_NO()<<" Data :"<<endl<<endl;
+	 	
+	 	Student stu;
+	    stu.student_info();
+	      
+	    Department dep;
+	    dep.student_info();
+	
+	    Subject sub;
+	    sub.Subject_info();
+	    sub.Marks_info();
+	    
+	    b=false;
+	    
+	    bool a=true;
+	    while(a){
+		
+	    int update;
+	    
+	    cout<<endl<<endl<<"Enter 1 to  SAVE your data "<<endl;
+	    
+		cout<<"Enter 2 to UPDATE your data  "<<endl;
+		
+		cout<<"Enter 3 to DELETE your data "<<endl;
+		
+		cout<<"Enter number : ";  cin>>update;
+	    
+	if(update==1){
+		
+	    cout<<endl<<endl<<"Your data is saved successfully :"<<endl<<endl;
+	    Display(stu,dep,sub);
+	    break;
+	}
+	
+	else if(update==2){
+		
+		
+		Student stu;
+	    stu.student_info();
+	      
+	    Department dep;
+	    dep.student_info();
+	
+	    Subject sub;
+	    sub.Subject_info();
+	    sub.Marks_info();
+	    
+	    cout<<endl<<endl<<"Your data is saved successfully :"<<endl<<endl;
+	    
+		Display(stu,dep,sub);
+		
+		break;
+	}
+	
+	else if(update==3){
+		a=false;
+	}
+	
+	else{
+		
+		cout<<"Please Enter valied input"<<endl;
+		
+	}  // end of else  
+	 
+	   
+    } 
+    
+	}  
+	    
+		    
+	else if(*num==2)  {
+		
+		string line;
+	    ifstream read_from_file;
+ 
+        read_from_file.open("students_data.txt");
+ 
+        while (getline(read_from_file, line)) {
+            	
+			cout << line << endl;
+        }
+        
+		read_from_file.close();
+		
+		b=false;
+	}  
+	
+	
+	else if(*num==3){
+		
+		b=false;
+    
+	}
+	else{
+		
+		cout<<"Please Enter valied input"<<endl;
+        b=true;
+	}
+	
+   }
+	
+}
+
+
+
+
+int main() {
+	
+	
+main_display();
+			
+	return 0;
+}
+
+
+
+
+
+
+
+
